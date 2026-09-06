@@ -1,96 +1,263 @@
-def check_job(job_text):
+# JobGuard AI - Fake Job Detector
+# Member 4: Shubhangi + Vivek
 
-    job_text = job_text.lower()
+import re
 
-    score = 0
+
+# =========================================================
+# 1. SCAM KEYWORDS
+# =========================================================
+
+PAYMENT_SCAM_WORDS = [
+    "registration fee",
+    "processing fee",
+    "training fee",
+    "security deposit",
+    "refundable fee",
+    "pay money",
+    "paytm karo",
+    "upi payment",
+    "investment",
+    "joining fee",
+    "application fee",
+]
+
+GUARANTEED_JOB_WORDS = [
+    "guaranteed job",
+    "guaranteed employment",
+    "100% job guarantee",
+    "100% job",
+    "pakki naukri",
+    "without interview",
+    "bina interview ke",
+    "earn daily",
+    "daily 3000",
+    "daily 5000",
+    "work from home and earn",
+]
+
+CONTACT_SCAM_WORDS = [
+    "whatsapp only",
+    "only on whatsapp",
+    "contact on whatsapp",
+    "personal whatsapp",
+    "telegram only",
+    "contact on telegram",
+    "inbox on telegram",
+    "t.me/",
+]
+
+URGENCY_WORDS = [
+    "urgent hiring",
+    "apply now",
+    "join immediately",
+    "today only",
+    "last date today",
+    "immediately join",
+    "limited seats",
+    "hurry",
+    "aaj hi join karo",
+]
+
+
+# =========================================================
+# 2. PAYMENT SCAM CHECK
+# =========================================================
+
+def check_payment_scam(text):
     reasons = []
 
-    # Check if the job asks for money
-    payment_words = [
-        "registration fee",
-        "processing fee",
-        "training fee",
-        "security deposit"
-    ]
+    text = text.lower()
 
-    for word in payment_words:
-        if word in job_text:
-            score = score + 25
-            reasons.append("Job asks for payment")
-            break
+    for word in PAYMENT_SCAM_WORDS:
+        if word in text:
+            reasons.append(
+                f"Payment/fee request found: '{word}'"
+            )
 
-    # Check for guaranteed job claims
-    guaranteed_words = [
-        "guaranteed job",
-        "guaranteed employment",
-        "100% job guarantee"
-    ]
+    return reasons
 
-    for word in guaranteed_words:
-        if word in job_text:
-            score = score + 20
-            reasons.append("Guaranteed job claim found")
-            break
 
-    # Check suspicious contact methods
-    contact_words = [
-        "whatsapp only",
-        "only on whatsapp",
-        "telegram only"
-    ]
+# =========================================================
+# 3. GUARANTEED JOB CHECK
+# =========================================================
 
-    for word in contact_words:
-        if word in job_text:
-            score = score + 15
-            reasons.append("Suspicious contact method found")
-            break
+def check_guaranteed_claims(text):
+    reasons = []
 
-    # Check urgent or pressure language
-    urgent_words = [
-        "urgent hiring",
-        "apply now",
-        "limited seats",
-        "hurry"
-    ]
+    text = text.lower()
 
-    for word in urgent_words:
-        if word in job_text:
-            score = score + 10
-            reasons.append("Urgent hiring language found")
-            break
+    for word in GUARANTEED_JOB_WORDS:
+        if word in text:
+            reasons.append(
+                f"Unrealistic job claim found: '{word}'"
+            )
 
-    # Decide the risk level
-    if score >= 60:
-        risk = "High Risk"
-    elif score >= 30:
-        risk = "Medium Risk"
+    return reasons
+
+
+# =========================================================
+# 4. SUSPICIOUS CONTACT CHECK
+# =========================================================
+
+def check_suspicious_contact(text):
+    reasons = []
+
+    text = text.lower()
+
+    for word in CONTACT_SCAM_WORDS:
+        if word in text:
+            reasons.append(
+                f"Suspicious contact method found: '{word}'"
+            )
+
+    # UPI ID detection
+    upi_pattern = r"[a-zA-Z0-9._-]{2,}@[a-zA-Z]{2,}"
+
+    if re.search(upi_pattern, text):
+        reasons.append(
+            "UPI ID/payment information found in job description"
+        )
+
+    return reasons
+
+
+# =========================================================
+# 5. URGENCY CHECK
+# =========================================================
+
+def check_urgency_tactics(text):
+    reasons = []
+
+    text = text.lower()
+
+    for word in URGENCY_WORDS:
+        if word in text:
+            reasons.append(
+                f"Urgency/pressure language found: '{word}'"
+            )
+
+    return reasons
+
+
+# =========================================================
+# 6. MAIN FUNCTION
+# =========================================================
+
+def analyze_job_risk(job_description):
+    """
+    Analyze a job description and return a risk report.
+    """
+
+    if not job_description:
+        return {
+            "result": "UNKNOWN",
+            "risk_score": 0,
+            "risk_level": "Unknown",
+            "reasons": ["Job description is empty"]
+        }
+
+    all_reasons = []
+
+    # Run all checks
+    all_reasons.extend(
+        check_payment_scam(job_description)
+    )
+
+    all_reasons.extend(
+        check_guaranteed_claims(job_description)
+    )
+
+    all_reasons.extend(
+        check_suspicious_contact(job_description)
+    )
+
+    all_reasons.extend(
+        check_urgency_tactics(job_description)
+    )
+
+
+    # =====================================================
+    # RISK SCORE
+    # =====================================================
+
+    # Each detected indicator = 10 points
+    risk_score = len(all_reasons) * 10
+
+    # Maximum score = 100
+    risk_score = min(risk_score, 100)
+
+
+    # =====================================================
+    # RISK LEVEL
+    # =====================================================
+
+    if risk_score >= 60:
+
+        risk_level = "High Risk"
+        result = "SUSPICIOUS"
+
+    elif risk_score >= 30:
+
+        risk_level = "Medium Risk"
+        result = "SUSPICIOUS"
+
     else:
-        risk = "Low Risk"
 
-    return score, risk, reasons
+        risk_level = "Low Risk"
+        result = "LOW RISK"
 
 
-# Testing the program
-job_description = """
-URGENT HIRING!
+    # =====================================================
+    # FINAL REPORT
+    # =====================================================
 
-Guaranteed job for everyone.
+    final_report = {
+        "result": result,
+        "risk_score": risk_score,
+        "risk_level": risk_level,
+        "reasons": (
+            all_reasons
+            if all_reasons
+            else ["No major scam indicators detected"]
+        )
+    }
 
-Pay a registration fee of Rs. 2000.
+    return final_report
 
-Contact us only on WhatsApp.
 
-Limited seats available. Apply now!
-"""
+# =========================================================
+# 7. TESTING
+# =========================================================
 
-score, risk, reasons = check_job(job_description)
+if __name__ == "__main__":
 
-print("JobGuard AI - Fake Job Detector")
-print()
+    test_job = """
+    URGENT HIRING!
 
-print("Risk Score:", score)
-print("Risk Level:", risk)
+    Guaranteed job for everyone.
 
-print("\nReasons:")
-for reason in reasons:
-    print("-", reason)
+    Work from home and earn daily 5000.
+
+    Pay registration fee of Rs. 2000.
+
+    Contact us only on WhatsApp.
+
+    Limited seats available.
+    """
+
+    report = analyze_job_risk(test_job)
+
+    print("\n================================")
+    print("     JobGuard AI")
+    print("   Fake Job Detector")
+    print("================================")
+
+    print("\nResult:", report["result"])
+    print("Risk Score:", report["risk_score"])
+    print("Risk Level:", report["risk_level"])
+
+    print("\nReasons:")
+
+    for reason in report["reasons"]:
+        print("-", reason)
