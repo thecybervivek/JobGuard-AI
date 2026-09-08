@@ -209,4 +209,4 @@ The goal of JobGuard AI is to give job seekers a simple way to understand:
 ---
 
 **Project:** JobGuard AI
-**Purpose:** Academic / Educational Project
+**Purpose:** Educational Project
