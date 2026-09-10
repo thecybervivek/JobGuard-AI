@@ -182,10 +182,15 @@ The structure will be updated as the project modules are completed and integrate
 ## Team
 
 **Vivek Sharma** — Project Lead
+
 **Shubhangi Singh Rajput** — Job Scam Detection
+
 **Ananya Awasthi** — Resume Matching & AI
+
 **Vinay Prajapati** — Resume Parsing
+
 **Ishita Awasthi** — Resume Parsing
+
 **Sunanya Goswami** — Frontend Development
 
 ## Future Work
@@ -209,4 +214,5 @@ The goal of JobGuard AI is to give job seekers a simple way to understand:
 ---
 
 **Project:** JobGuard AI
+
 **Purpose:** Educational Project
