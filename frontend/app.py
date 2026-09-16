@@ -1,7 +1,7 @@
 import requests
 import streamlit as st
 
-API_URL = st.sidebar.text_input("Backend URL", "https://jobguard-ai-backend.onrender.com")
+API_URL = "https://jobguard-ai-backend.onrender.com"
 
 st.set_page_config(page_title="JobGuard AI", page_icon="📄", layout="centered")
 st.title("JobGuard AI")
