@@ -8,11 +8,11 @@ st.title("JobGuard AI")
 st.caption("Resume matching and job-risk analysis")
 
 try:
-    jobs = requests.get(f"{API_URL}/api/jobs", timeout=5).json()
+    requests.get(f"{API_URL}/health", timeout=60)
+    jobs = requests.get(f"{API_URL}/api/jobs", timeout=60).json()
 except Exception:
     jobs = []
-    st.error("Backend is not running. Start the FastAPI server first.")
-
+    st.error("Backend is waking up. Please refresh the page in a few seconds.")
 uploaded = st.file_uploader("Upload Resume", type=["pdf", "docx"])
 
 if jobs:
